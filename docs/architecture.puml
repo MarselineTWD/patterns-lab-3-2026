@@ -1,0 +1,46 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+enum LogLevel
+
+class MessageFormatter {
+  +format(level, message): str
+}
+
+class Logger {
+  -strategy: OutputStrategy
+  -formatter: MessageFormatter
+  +log(level, message): str
+}
+
+abstract class OutputStrategy <<Strategy>> {
+  +write(message): void
+}
+
+class ConsoleOutputStrategy <<Concrete Strategy>>
+class FileOutputStrategy <<Concrete Strategy>>
+class UppercaseFileOutputStrategy <<Concrete Strategy>>
+
+abstract class LoggerCreator <<Creator>> {
+  +create_strategy(): OutputStrategy
+  +create_logger(): Logger
+}
+
+class ConsoleLoggerCreator <<Concrete Creator>>
+class FileLoggerCreator <<Concrete Creator>>
+class UppercaseFileLoggerCreator <<Concrete Creator>>
+
+Logger *-- MessageFormatter
+Logger o-- OutputStrategy
+MessageFormatter --> LogLevel
+
+OutputStrategy <|-- ConsoleOutputStrategy
+OutputStrategy <|-- FileOutputStrategy
+FileOutputStrategy <|-- UppercaseFileOutputStrategy
+
+LoggerCreator <|-- ConsoleLoggerCreator
+LoggerCreator <|-- FileLoggerCreator
+LoggerCreator <|-- UppercaseFileLoggerCreator
+LoggerCreator ..> Logger : создаёт
+LoggerCreator ..> OutputStrategy : фабричный метод
+@enduml
